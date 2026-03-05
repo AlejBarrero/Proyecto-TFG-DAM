@@ -1,0 +1,46 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "app.js",
+    "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --coverage",
+    "test:unit": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js tests/unit --coverage",
+    "test:integration": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js tests/integration"
+    },
+    "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "moduleNameMapper": {
+        "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "collectCoverageFrom": [
+        "services/**/*.js",
+        "controllers/**/*.js",
+        "routes/**/*.js"
+    ],
+    "coverageThreshold": {
+        "global": {
+        "lines": 60
+        }
+    }
+    },
+    "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "franc": "^6.1.0",
+    "fs-extra": "^11.2.0",
+    "google-tts-api": "^2.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
+    "pdfjs-dist": "^5.4.624"
+    },
+    "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
+    }
+}

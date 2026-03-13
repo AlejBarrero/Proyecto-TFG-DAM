@@ -1,25 +1,29 @@
-import logo from './logo.svg';
+import FileUploader from './components/FileUploader';
 import './App.css';
-
+ 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+    <div className="app-container">
+      <header className="app-header" role="banner">
+        <div className="app-logo" aria-hidden="true">📄🔊</div>
+        <h1 className="app-title">PDF2Voice</h1>
+        <p className="app-subtitle">
+          Convierte documentos PDF en audio en español automáticamente
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <p className="app-description">
+          Soporta documentos en <strong>inglés</strong> (se traducen automáticamente) y{' '}
+          <strong>español</strong>. Máximo 10 MB.
+        </p>
       </header>
+      <main role="main">
+        <FileUploader />
+      </main>
+      <footer className="app-footer" role="contentinfo">
+        <p>PDF2Voice &mdash; Proyecto TFG DAM &mdash; 2025</p>
+      </footer>
     </div>
   );
 }
-
+ 
 export default App;
+

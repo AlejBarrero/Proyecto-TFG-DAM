@@ -23,21 +23,21 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
     storage,
     fileFilter,
-  limits: { fileSize: MAX_SIZE_MB * 1024 * 1024 },
+    limits: { fileSize: MAX_SIZE_MB * 1024 * 1024 },
 });
 
 // Middleware para errores de Multer
 const uploadMiddleware = (req, res, next) => {
     upload.single('pdf')(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-        if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ message: `El archivo supera el límite de ${MAX_SIZE_MB} MB` });
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ message: `El archivo supera el límite de ${MAX_SIZE_MB} MB` });
+            }
+            return res.status(400).json({ message: err.message });
+        } else if (err) {
+            return res.status(400).json({ message: err.message });
         }
-        return res.status(400).json({ message: err.message });
-    } else if (err) {
-        return res.status(400).json({ message: err.message });
-    }
-    next();
+        next();
     });
 };
 

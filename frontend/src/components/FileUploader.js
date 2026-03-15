@@ -35,16 +35,6 @@ export default function FileUploader() {
   };
 
   const handleInputChange = (e) => handleFileSelect(e.target.files[0] || null);
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setDragOver(true);
-  };
-  const handleDragLeave = () => setDragOver(false);
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    handleFileSelect(e.dataTransfer.files[0] || null);
-  };
 
   const handleUpload = async () => {
     if (!file) {
@@ -76,18 +66,14 @@ export default function FileUploader() {
   };
 
   return (
-    <section className="uploader-card" aria-label="Conversor de PDF a audio">
+    <section className="uploader-card">
       {!response && (
         <>
           <div
-            className={`drop-zone ${dragOver ? "drop-zone--active" : ""} ${file ? "drop-zone--has-file" : ""}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
+            className="drop-zone drop-zone--has-file"
             onClick={() => inputRef.current?.click()}
             role="button"
             tabIndex={0}
-            aria-label="Zona de carga de PDF. Haz clic o arrastra un archivo aquí."
             onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
           >
             <input
@@ -96,14 +82,10 @@ export default function FileUploader() {
               type="file"
               accept="application/pdf,.pdf"
               onChange={handleInputChange}
-              aria-label="Seleccionar archivo PDF"
               className="visually-hidden"
             />
             {file ? (
               <div className="file-info" aria-live="polite">
-                <span className="file-icon" aria-hidden="true">
-                  📄
-                </span>
                 <span className="file-name">{file.name}</span>
                 <span className="file-size">
                   ({(file.size / 1024 / 1024).toFixed(2)} MB)
@@ -111,11 +93,8 @@ export default function FileUploader() {
               </div>
             ) : (
               <div className="drop-prompt">
-                <span className="drop-icon" aria-hidden="true">
-                  ⬆️
-                </span>
                 <p className="drop-text">
-                  <strong>Arrastra tu PDF aquí</strong> o haz clic para buscarlo
+                  Hace click para buscarlo
                 </p>
                 <p className="drop-hint">
                   Solo PDF &bull; Máximo {MAX_SIZE_MB} MB
@@ -128,11 +107,6 @@ export default function FileUploader() {
             onClick={handleUpload}
             disabled={loading || !file}
             aria-busy={loading}
-            aria-label={
-              loading
-                ? "Procesando el documento, por favor espera"
-                : "Convertir PDF a audio"
-            }
           >
             {loading ? (
               <>
@@ -141,7 +115,6 @@ export default function FileUploader() {
               </>
             ) : (
               <>
-                <span aria-hidden="true">🔊</span>
                 <span>Convertir a Audio</span>
               </>
             )}
@@ -150,37 +123,27 @@ export default function FileUploader() {
       )}
       {error && (
         <div className="alert alert--error" role="alert" aria-live="assertive">
-          <span aria-hidden="true">⚠️</span>
           <span>{error}</span>
         </div>
       )}
       {response && (
         <div className="result" aria-live="polite">
           <div className="result__header">
-            <span className="result__icon" aria-hidden="true">
-              ✅
-            </span>
             <h2 className="result__title">Conversión completada</h2>
           </div>
           <div className="result__badges">
             <span
               className="badge badge--lang"
-              aria-label={`Idioma detectado: ${response.detectedLanguage}`}
-            >
-              🌐 {response.detectedLanguage}
+            >Idioma detectado: 
+              {response.detectedLanguage}
             </span>
             {response.translated && (
               <span
                 className="badge badge--translated"
-                aria-label="Traducido automáticamente de inglés a español"
               >
-                🔄 Traducido EN → ES
+                Traducido de inles a español
               </span>
             )}
-          </div>
-          <div className="result__preview">
-            <h3 className="result__preview-title">Vista previa del texto</h3>
-            <p className="result__preview-text">{response.preview}</p>
           </div>
           <div className="result__audio">
             <h3 className="result__audio-title">Reproducir audio</h3>
@@ -189,7 +152,6 @@ export default function FileUploader() {
               controls
               src={response.audioUrl}
               className="audio-player"
-              aria-label="Reproductor del audio generado"
             />
           </div>
           <div className="result__actions">
@@ -197,18 +159,20 @@ export default function FileUploader() {
               className="btn btn--success"
               href={response.audioUrl}
               download="pdf2voice-audio.mp3"
-              aria-label="Descargar el audio en MP3"
             >
-              <span aria-hidden="true">⬇️</span>
               <span>Descargar MP3</span>
             </a>
             <button
               className="btn btn--secondary"
               onClick={handleReset}
-              aria-label="Convertir otro documento PDF"
             >
-              <span aria-hidden="true">🔁</span>
               <span>Convertir otro PDF</span>
+            </button>
+            <button
+              className="btn btn--secondary"
+              onClick={handleReset}
+            >
+              <span>Administrar audios</span>
             </button>
           </div>
         </div>

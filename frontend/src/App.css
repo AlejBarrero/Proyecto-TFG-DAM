@@ -1,21 +1,19 @@
-/* ── Variables de diseño (paleta del anteproyecto) ── */
 :root {
-  --color-primary:    #182C62;
-  --color-secondary:  #508AE8;
-  --color-accent:     #FA8A3A;
-  --color-bg:         #F3F4F6;
-  --color-surface:    #FFFFFF;
-  --color-text:       #1F2937;
-  --color-text-muted: #6B7280;
-  --color-error-bg:   #FEE2E2;
-  --color-error-text: #B91C1C;
-  --color-success:    #15803D;
-  --radius:           12px;
-  --shadow:           0 4px 20px rgba(24, 44, 98, 0.12);
+  --color-primary: #182C62;
+  --color-secondary: #508AE8;
+  --color-accent: #FA8A3A;
+  --color-bg: #F3F4F6;
+  --color-surface: #FFFFFF;
+  --color-text: #182C62;
+  --color-text-muted: #508AE8;
+  --color-error-bg: #FFFFFF;
+  --color-error-text: #FA8A3A;
+  --color-success: #182C62;
+  --radius: 12px;
 }
- 
+
 *, *::before, *::after { box-sizing: border-box; }
- 
+
 body {
   margin: 0;
   font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
@@ -23,35 +21,35 @@ body {
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
 }
- 
+
 .app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
- 
+
 .app-header {
   width: 100%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #2A4A9E 100%);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-surface);
   text-align: center;
   padding: 40px 24px 36px;
 }
- 
+
 .app-logo { font-size: 48px; margin-bottom: 8px; line-height: 1; }
-.app-title { font-size: 2.4rem; font-weight: 700; margin: 0 0 8px; color: #fff; }
-.app-subtitle { font-size: 1.05rem; margin: 0 0 10px; color: rgba(255,255,255,0.85); }
-.app-description { font-size: 0.9rem; color: rgba(255,255,255,0.65); margin: 0; }
- 
+.app-title { font-size: 2.4rem; font-weight: 700; margin: 0 0 8px; color: var(--color-surface); }
+.app-subtitle { font-size: 1.05rem; margin: 0 0 10px; color: var(--color-surface); }
+.app-description { font-size: 0.9rem; color: var(--color-surface); margin: 0; }
+
 main {
   flex: 1; width: 100%;
   display: flex; justify-content: center;
   padding: 32px 16px;
 }
- 
+
 .app-footer {
   width: 100%; text-align: center; padding: 16px;
   font-size: 0.8rem; color: var(--color-text-muted);
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid var(--color-bg);
 }

@@ -1,6 +1,4 @@
-import '../../../main.css';
-
-export default function UploadDropzone({ file, inputRef, onInputChange, maxSizeMb }) {
+export default function UploadDropZone({ file, inputRef, onInputChange, maxSizeMb }) {
   return (
     <div
       className="drop-zone drop-zone--has-file"
@@ -21,9 +19,7 @@ export default function UploadDropzone({ file, inputRef, onInputChange, maxSizeM
       {file ? (
         <div className="file-info" aria-live="polite">
           <span className="file-name">{file.name}</span>
-          <span className="file-size">
-            ({(file.size / 1024 / 1024).toFixed(2)} MB)
-          </span>
+          <span className="file-size">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
         </div>
       ) : (
         <div className="drop-prompt">

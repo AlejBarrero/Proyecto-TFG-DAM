@@ -56,6 +56,6 @@ export function usePdfUpload() {
     error,
     selectFile,
     upload,
-    reset
+    reset,
   };
 }

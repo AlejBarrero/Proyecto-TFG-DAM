@@ -1,5 +1,3 @@
-import '../../../main.css';
-
 export default function UploadError({ message }) {
   if (!message) return null;
 

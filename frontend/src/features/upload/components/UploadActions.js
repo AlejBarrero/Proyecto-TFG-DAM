@@ -1,13 +1,6 @@
-import '../../../main.css';
-
 export default function UploadActions({ loading, disabled, onUpload }) {
   return (
-    <button
-      className="btn btn--primary"
-      onClick={onUpload}
-      disabled={disabled}
-      aria-busy={loading}
-    >
+    <button className="btn btn--primary" onClick={onUpload} disabled={disabled} aria-busy={loading}>
       {loading ? (
         <>
           <span className="spinner" aria-hidden="true" />
@@ -19,4 +12,3 @@ export default function UploadActions({ loading, disabled, onUpload }) {
     </button>
   );
 }
-

@@ -14,16 +14,16 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/pdf', pdfRoutes);
 
 // Manejo global de errores no controlados
-app.use((err, req, res, next) => {
-    console.error('Error no controlado:', err);
-    res.status(500).json({ message: 'Error interno del servidor', error: err.message });
+app.use((err, req, res, _next) => {
+  console.error('Error no controlado:', err);
+  res.status(500).json({ message: 'Error interno del servidor', error: err.message });
 });
 
 // Solo arranca el servidor si este archivo es el punto de entrada (no en tests)
 if (process.env.NODE_ENV !== 'test') {
-    app.listen(PORT, () => {
-        console.log(`Servidor escuchando en http://localhost:${PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  });
 }
 
 export default app;

@@ -21,6 +21,7 @@
                     "lint:fix":  "eslint \"src/**/*.{js,jsx}\" --fix",
                     "format":  "prettier --write \"src/**/*.{js,jsx,css,json,md}\" \"public/**/*.{html,json}\"",
                     "format:check":  "prettier --check \"src/**/*.{js,jsx,css,json,md}\" \"public/**/*.{html,json}\"",
+                    "doctor": "npm run lint && npm run format:check && npm run build",
                     "eject":  "react-scripts eject"
                 },
     "browserslist":  {

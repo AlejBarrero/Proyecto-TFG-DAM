@@ -1,0 +1,20 @@
+reglas.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Env
+.env
+.env.*
+
+# Node
+**/node_modules/
+**/coverage/
+**/build/
+
+# Generated uploads
+backend/uploads/*.mp3

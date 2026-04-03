@@ -7,21 +7,21 @@ import googleTTS from 'google-tts-api';
  * para no cortar palabras a la mitad (límite de google-tts-api: aprox. 200 caracteres)
  */
 const splitTextIntoChunks = (text, maxLength = 190) => {
-    const words = text.split(' ');
-    const chunks = [];
-    let current = '';
+  const words = text.split(' ');
+  const chunks = [];
+  let current = '';
 
-    for (const word of words) {
-        if ((current + ' ' + word).trim().length > maxLength) {
-            if (current) chunks.push(current.trim());
-            current = word;
-        } else {
-            current = current ? current + ' ' + word : word;
-        }
+  for (const word of words) {
+    if ((current + ' ' + word).trim().length > maxLength) {
+      if (current) chunks.push(current.trim());
+      current = word;
+    } else {
+      current = current ? current + ' ' + word : word;
     }
-    if (current) chunks.push(current.trim());
+  }
+  if (current) chunks.push(current.trim());
 
-    return chunks;
+  return chunks;
 };
 
 /**
@@ -31,23 +31,23 @@ const splitTextIntoChunks = (text, maxLength = 190) => {
  * @param {string} outputPath - Ruta de salida del MP3
  */
 export const textToSpeech = async (text, languageCode, outputPath) => {
-    const chunks = splitTextIntoChunks(text);
-    const buffers = [];
+  const chunks = splitTextIntoChunks(text);
+  const buffers = [];
 
-    for (const chunk of chunks) {
-        if (!chunk.trim()) continue;
+  for (const chunk of chunks) {
+    if (!chunk.trim()) continue;
 
-        const url = googleTTS.getAudioUrl(chunk, {
-            lang: languageCode,
-            slow: false,
-            host: 'https://translate.google.com',
-        });
+    const url = googleTTS.getAudioUrl(chunk, {
+      lang: languageCode,
+      slow: false,
+      host: 'https://translate.google.com',
+    });
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Error al obtener audio de Google TTS: ${res.statusText}`);
-        const arrayBuffer = await res.arrayBuffer();
-        buffers.push(Buffer.from(arrayBuffer));
-    }
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Error al obtener audio de Google TTS: ${res.statusText}`);
+    const arrayBuffer = await res.arrayBuffer();
+    buffers.push(Buffer.from(arrayBuffer));
+  }
 
-    fs.writeFileSync(outputPath, Buffer.concat(buffers));
+  fs.writeFileSync(outputPath, Buffer.concat(buffers));
 };

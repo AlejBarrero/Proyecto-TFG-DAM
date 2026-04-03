@@ -8,33 +8,34 @@
  * @returns {string}
  */
 export const normalizeText = (rawText) => {
-    if (!rawText || typeof rawText !== 'string') return '';
+  if (!rawText || typeof rawText !== 'string') return '';
 
-    let text = rawText;
+  let text = rawText;
 
-    // Eliminar caracteres de control (excepto saltos de línea y tabulaciones)
-    text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  // Eliminar caracteres de control (excepto saltos de linea y tabulaciones)
+  // eslint-disable-next-line no-control-regex
+  text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
-    // Unir palabras cortadas con guión al final de línea (ej: "auto-\nmático" → "automático")
-    text = text.replace(/-\n(\s*)/g, '');
+  // Unir palabras cortadas con guión al final de línea (ej: "auto-\nmático" → "automático")
+  text = text.replace(/-\n(\s*)/g, '');
 
-    // Reemplazar tabulaciones por espacio
-    text = text.replace(/\t/g, ' ');
+  // Reemplazar tabulaciones por espacio
+  text = text.replace(/\t/g, ' ');
 
-    // Colapsar múltiples espacios en uno solo
-    text = text.replace(/ {2,}/g, ' ');
+  // Colapsar múltiples espacios en uno solo
+  text = text.replace(/ {2,}/g, ' ');
 
-    // Colapsar más de dos saltos de línea consecutivos en dos
-    text = text.replace(/\n{3,}/g, '\n\n');
+  // Colapsar más de dos saltos de línea consecutivos en dos
+  text = text.replace(/\n{3,}/g, '\n\n');
 
-    // Eliminar espacios al inicio y al final de cada línea
-    text = text
-        .split('\n')
-        .map((line) => line.trim())
-        .join('\n');
+  // Eliminar espacios al inicio y al final de cada línea
+  text = text
+    .split('\n')
+    .map((line) => line.trim())
+    .join('\n');
 
-    // Recortar el texto completo
-    return text.trim();
+  // Recortar el texto completo
+  return text.trim();
 };
 
 /**
@@ -44,5 +45,5 @@ export const normalizeText = (rawText) => {
  * @returns {boolean}
  */
 export const hasEnoughContent = (text, minLength = 50) => {
-    return text && text.trim().length >= minLength;
+  return text && text.trim().length >= minLength;
 };

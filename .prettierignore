@@ -1,0 +1,9 @@
+backend/node_modules
+frontend/node_modules
+backend/coverage
+frontend/coverage
+frontend/build
+backend/uploads/*.mp3
+**/package-lock.json
+frontend/public/favicon.ico
+frontend/public/robots.txt

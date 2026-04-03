@@ -1,3 +1,5 @@
+import { formatFileSize } from "../../../shared/utils/formatFileSize";
+
 export default function UploadDropZone({ file, inputRef, onInputChange, maxSizeMb }) {
   return (
     <div
@@ -19,7 +21,7 @@ export default function UploadDropZone({ file, inputRef, onInputChange, maxSizeM
       {file ? (
         <div className="file-info" aria-live="polite">
           <span className="file-name">{file.name}</span>
-          <span className="file-size">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+          <span className="file-size">{formatFileSize(file.size)}</span>
         </div>
       ) : (
         <div className="drop-prompt">

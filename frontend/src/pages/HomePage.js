@@ -1,5 +1,5 @@
 import FileUploader from '../features/upload/components/FileUploader';
-import '../App.css';
+import '../app/App.css';
 
 function HomePage() {
   return (

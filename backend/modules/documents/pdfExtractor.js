@@ -3,7 +3,6 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 export const extractTextFromPdf = async (filePath) => {
   const data = new Uint8Array(fs.readFileSync(filePath));
-
   const pdf = await pdfjsLib.getDocument({ data }).promise;
 
   let text = '';
@@ -12,7 +11,7 @@ export const extractTextFromPdf = async (filePath) => {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
     const strings = content.items.map((item) => item.str);
-    text += strings.join(' ') + '\n';
+    text += `${strings.join(' ')}\n`;
   }
 
   return text;

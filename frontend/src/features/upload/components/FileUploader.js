@@ -44,19 +44,21 @@ export default function FileUploader({ isAuthenticated = false, onUploadSuccess 
   return (
     <section className="w-full">
       {!response && (
-        <div className="w-full max-w-3xl rounded-[28px] border border-white/60 bg-white/95 p-8 shadow-panel backdrop-blur sm:p-10">
-          <p className="mb-6 text-sm leading-6 text-slate-500">
+        <div className="mx-auto w-full max-w-3xl rounded-[24px] border border-white/60 bg-white/95 p-5 shadow-panel backdrop-blur sm:rounded-[28px] sm:p-8 lg:p-10">
+          <p className="mb-5 text-sm leading-6 text-slate-500 sm:mb-6">
             {isAuthenticated
               ? 'Modo usuario: el documento se procesa y se guarda en tu cuenta.'
               : 'Modo invitado: el documento se procesa, pero no se guarda en la base de datos.'}
           </p>
-          <div className="space-y-5">
+
+          <div className="space-y-4 sm:space-y-5">
             <UploadDropZone
               file={file}
               inputRef={inputRef}
               onInputChange={handleInputChange}
               maxSizeMb={maxSizeMb}
             />
+
             {isAuthenticated && (
               <DocumentMetadataForm
                 metadata={metadata}
@@ -64,15 +66,18 @@ export default function FileUploader({ isAuthenticated = false, onUploadSuccess 
                 disabled={loading}
               />
             )}
+
             <UploadActions loading={loading} disabled={loading || !file} onUpload={handleUpload} />
           </div>
         </div>
       )}
+
       {error && (
-        <div className="mt-4 w-full max-w-3xl">
+        <div className="mx-auto mt-4 w-full max-w-3xl">
           <UploadError message={error} />
         </div>
       )}
+
       {response && (
         <div className="mt-4">
           <AudioResultCard response={response} onReset={handleReset} />

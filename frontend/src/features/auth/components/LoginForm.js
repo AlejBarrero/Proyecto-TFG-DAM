@@ -23,14 +23,12 @@ export default function LoginForm({ onSubmit, loading, error }) {
 
     try {
       await onSubmit(form);
-    } catch {
-      // El error ya se pinta desde props.error.
-    }
+    } catch {}
   };
 
   return (
-    <section className="w-full max-w-2xl rounded-[28px] border border-white/60 bg-white/90 p-8 shadow-panel backdrop-blur sm:p-10">
-      <div className="mb-8 space-y-2">
+    <section className="mx-auto w-full max-w-2xl rounded-[24px] border border-white/60 bg-white/90 p-5 shadow-panel backdrop-blur sm:rounded-[28px] sm:p-8 lg:p-10">
+      <div className="mb-6 space-y-2 sm:mb-8">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-mid">
           Acceso
         </p>
@@ -41,7 +39,7 @@ export default function LoginForm({ onSubmit, loading, error }) {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <label className="block text-sm font-semibold text-brand-dark">
           Email
           <input

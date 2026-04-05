@@ -27,21 +27,21 @@ export default function TopNavbar({
   };
 
   return (
-    <div className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur">
-      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
+    <div className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur">
+      <nav className="topbar-shell">
         <button
-          className="inline-flex items-center gap-3 rounded-full px-2 py-1 text-left transition hover:bg-brand-soft/80"
+          className="inline-flex items-center gap-3 rounded-full px-2 py-1 text-left transition hover:bg-brand-soft/80 focus:outline-none focus:ring-4 focus:ring-brand-mid/15"
           onClick={handleLogoClick}
           type="button"
         >
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-dark text-sm font-black text-white">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-dark text-sm font-black text-white sm:h-11 sm:w-11">
             P2V
           </span>
-          <span className="hidden sm:block">
-            <span className="block text-sm font-semibold uppercase tracking-[0.24em] text-brand-mid">
+          <span className="block">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-mid sm:text-xs">
               PDF2Voice
             </span>
-            <span className="block text-base font-bold text-brand-dark">Inicio</span>
+            <span className="block text-sm font-bold text-brand-dark sm:text-base">Inicio</span>
           </span>
         </button>
 
@@ -60,7 +60,7 @@ export default function TopNavbar({
         </div>
 
         <button
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 text-brand-dark transition hover:bg-slate-50 md:hidden"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 text-brand-dark transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-brand-mid/15 md:hidden"
           onClick={() => setMenuOpen((current) => !current)}
           type="button"
           aria-expanded={menuOpen}
@@ -75,8 +75,8 @@ export default function TopNavbar({
       </nav>
 
       {menuOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 py-4 shadow-panel md:hidden">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3">
+        <div className="border-t border-slate-200 bg-white md:hidden">
+          <div className="page-shell flex flex-col gap-3 py-4">
             <button
               className={`${navButtonClassName} ${
                 isAuthenticated

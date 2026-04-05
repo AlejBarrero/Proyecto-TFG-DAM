@@ -13,7 +13,7 @@ export default function UserDocumentEditor({
   onDelete,
 }) {
   return (
-    <div className="rounded-[28px] bg-white p-6 shadow-panel">
+    <div className="panel-card">
       <h2 className="text-xl font-bold">Detalle y edicion</h2>
 
       {error && (
@@ -31,7 +31,7 @@ export default function UserDocumentEditor({
       )}
 
       {selectedDocument && (
-        <div className="mt-6 space-y-5">
+        <div className="mt-6 space-y-5 sm:space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm font-semibold text-brand-dark md:col-span-2">
               Titulo
@@ -87,7 +87,7 @@ export default function UserDocumentEditor({
 
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:col-span-2">
               <p className="text-xs uppercase tracking-[0.18em] text-brand-mid">Archivo original</p>
-              <p className="mt-2 text-sm">{selectedDocument.fileName}</p>
+              <p className="mt-2 break-all text-sm">{selectedDocument.fileName}</p>
             </div>
           </div>
 
@@ -100,9 +100,9 @@ export default function UserDocumentEditor({
             </div>
           )}
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <button
-              className="rounded-2xl bg-brand-dark px-5 py-3 text-sm font-semibold text-white"
+              className="rounded-2xl bg-brand-dark px-5 py-3 text-sm font-semibold text-white sm:min-w-[180px]"
               onClick={onSave}
               disabled={saving}
               type="button"
@@ -111,7 +111,7 @@ export default function UserDocumentEditor({
             </button>
 
             <button
-              className="rounded-2xl border border-red-300 px-5 py-3 text-sm font-semibold text-red-600"
+              className="rounded-2xl border border-red-300 px-5 py-3 text-sm font-semibold text-red-600 sm:min-w-[180px]"
               onClick={onDelete}
               type="button"
             >

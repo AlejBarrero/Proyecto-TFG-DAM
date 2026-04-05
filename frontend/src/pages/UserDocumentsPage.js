@@ -31,8 +31,8 @@ function UserDocumentsPage({ user, onSignOut }) {
         description="Los invitados pueden convertir temporalmente. Los usuarios autenticados guardan sus documentos, y los administradores acceden a una vista de control global."
       />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-8">
-        <section className="rounded-[28px] bg-white p-6 shadow-panel">
+      <main className="page-shell section-stack py-8">
+        <section className="panel-card">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-mid">
             Sesion activa
           </p>
@@ -51,7 +51,7 @@ function UserDocumentsPage({ user, onSignOut }) {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className="section-stack">
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-mid">
               Nuevo documento
@@ -65,10 +65,12 @@ function UserDocumentsPage({ user, onSignOut }) {
             </p>
           </div>
 
-          <FileUploader isAuthenticated onUploadSuccess={loadDocuments} />
+          <div className="w-full">
+            <FileUploader isAuthenticated onUploadSuccess={loadDocuments} />
+          </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[360px_1fr]">
+        <section className="grid gap-6 lg:grid-cols-[340px_minmax(0,1fr)] xl:grid-cols-[360px_minmax(0,1fr)]">
           <UserDocumentsList
             documents={documents}
             loading={loadingList}

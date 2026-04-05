@@ -64,7 +64,7 @@ function HomePage() {
       />
       <MarketingHero />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-8" role="main">
+      <main className="page-shell section-stack py-8" role="main">
         {!isAuthenticated && showAuthPanel && (
           <AuthPanel
             authView={authView}
@@ -76,7 +76,7 @@ function HomePage() {
           />
         )}
 
-        <section className="space-y-4">
+        <section className="section-stack">
           <div className="flex flex-col gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-mid">
               Conversión
@@ -85,12 +85,14 @@ function HomePage() {
               Prueba la conversion sin cuenta
             </h2>
             <p className="max-w-3xl text-sm leading-6 text-slate-500 sm:text-base">
-              En modo invitado el archivo se convierte de forma temporal y no se persiste en la
-              base de datos.
+              En modo invitado el archivo se convierte de forma temporal y no se persiste en la base
+              de datos.
             </p>
           </div>
 
-          <FileUploader isAuthenticated={false} />
+          <div className="mx-auto w-full">
+            <FileUploader isAuthenticated={false} />
+          </div>
         </section>
       </main>
     </div>

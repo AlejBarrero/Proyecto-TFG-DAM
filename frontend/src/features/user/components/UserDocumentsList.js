@@ -5,7 +5,7 @@ export default function UserDocumentsList({
   onSelectDocument,
 }) {
   return (
-    <div className="rounded-[28px] bg-white p-6 shadow-panel">
+    <div className="panel-card">
       <h2 className="text-xl font-bold">Listado</h2>
 
       {loading ? (
@@ -18,7 +18,7 @@ export default function UserDocumentsList({
             return (
               <button
                 key={item.id}
-                className={`w-full rounded-2xl border p-4 text-left transition ${
+                className={`w-full rounded-2xl border p-4 text-left transition sm:p-5 ${
                   isSelected
                     ? 'border-brand-dark bg-brand-soft/60'
                     : 'border-slate-200 hover:border-brand-mid hover:bg-slate-50'

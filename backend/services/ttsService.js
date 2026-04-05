@@ -1,6 +1,9 @@
 import fs from 'fs';
-import fetch from 'node-fetch';
 import googleTTS from 'google-tts-api';
+import { fetchWithTimeout, retryAsync } from './httpClient.js';
+
+const TTS_TIMEOUT_MS = parseInt(process.env.TTS_TIMEOUT_MS || '10000', 10);
+const TTS_RETRIES = parseInt(process.env.TTS_RETRIES || '2', 10);
 
 /**
  * Divide el texto en fragmentos respetando palabras completas
@@ -16,12 +19,25 @@ const splitTextIntoChunks = (text, maxLength = 190) => {
       if (current) chunks.push(current.trim());
       current = word;
     } else {
-      current = current ? current + ' ' + word : word;
+      current = current ? `${current} ${word}` : word;
     }
   }
+
   if (current) chunks.push(current.trim());
 
   return chunks;
+};
+
+const fetchTtsChunk = async (url) => {
+  const response = await fetchWithTimeout(url, {}, TTS_TIMEOUT_MS);
+
+  if (!response.ok) {
+    const error = new Error(`Error al obtener audio de Google TTS: ${response.statusText}`);
+    error.retryable = response.status >= 500;
+    throw error;
+  }
+
+  return response;
 };
 
 /**
@@ -43,9 +59,12 @@ export const textToSpeech = async (text, languageCode, outputPath) => {
       host: 'https://translate.google.com',
     });
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Error al obtener audio de Google TTS: ${res.statusText}`);
-    const arrayBuffer = await res.arrayBuffer();
+    const response = await retryAsync(
+      () => fetchTtsChunk(url),
+      { retries: TTS_RETRIES }
+    );
+
+    const arrayBuffer = await response.arrayBuffer();
     buffers.push(Buffer.from(arrayBuffer));
   }
 

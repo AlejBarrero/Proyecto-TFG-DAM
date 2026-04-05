@@ -1,13 +1,14 @@
-import fetch from 'node-fetch';
+import { fetchWithTimeout, retryAsync } from './httpClient.js';
 
 const MYMEMORY_URL = 'https://api.mymemory.translated.net/get';
-const CHUNK_SIZE = 400; // La API MyMemory acepta hasta 500 caracteres por petición, usamos 400 parte tener más margen
+const CHUNK_SIZE = 400;
+const TRANSLATION_TIMEOUT_MS = parseInt(process.env.TRANSLATION_TIMEOUT_MS || '10000', 10);
+const TRANSLATION_RETRIES = parseInt(process.env.TRANSLATION_RETRIES || '2', 10);
 
 /**
  * Divide el texto en trozos más pequeños respetando frases completas
  * para que la traducción sea más coherente
  */
-
 const pushIfNotEmpty = (chunks, value) => {
   if (value.trim()) {
     chunks.push(value.trim());
@@ -36,7 +37,6 @@ const splitLongSentenceByWords = (sentence, maxLength) => {
 };
 
 const splitIntoSentenceChunks = (text, maxLength = CHUNK_SIZE) => {
-  // Dividir por oraciones (punto, interrogación, exclamación seguidos de espacio o fin)
   const sentences = text.match(/[^.!?]+[.!?]+[\s]*/g) || [text];
   const chunks = [];
   let current = '';
@@ -64,25 +64,42 @@ const splitIntoSentenceChunks = (text, maxLength = CHUNK_SIZE) => {
   return chunks;
 };
 
-/**
- * Traduce un fragmento de texto de inglés a español usando MyMemory API
- */
-const translateChunk = async (text) => {
+const fetchTranslationResponse = async (text) => {
   const params = new URLSearchParams({
     q: text,
     langpair: 'en|es',
   });
 
-  const res = await fetch(`${MYMEMORY_URL}?${params.toString()}`);
+  const response = await fetchWithTimeout(
+    `${MYMEMORY_URL}?${params.toString()}`,
+    {},
+    TRANSLATION_TIMEOUT_MS
+  );
 
-  if (!res.ok) {
-    throw new Error(`Error en MyMemory API: ${res.statusText}`);
+  if (!response.ok) {
+    const error = new Error(`Error en MyMemory API: ${response.statusText}`);
+    error.retryable = response.status >= 500;
+    throw error;
   }
 
-  const data = await res.json();
+  return response;
+};
+
+/**
+ * Traduce un fragmento de texto de inglés a español usando MyMemory API
+ */
+const translateChunk = async (text) => {
+  const response = await retryAsync(
+    () => fetchTranslationResponse(text),
+    { retries: TRANSLATION_RETRIES }
+  );
+
+  const data = await response.json();
 
   if (data.responseStatus !== 200) {
-    throw new Error(`MyMemory devolvió error: ${data.responseDetails || data.responseStatus}`);
+    throw new Error(
+      `MyMemory devolvio error: ${data.responseDetails || data.responseStatus}`
+    );
   }
 
   return data.responseData.translatedText;

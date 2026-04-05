@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  userName     String     @unique
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  documents    Document[]
+}
+
+model Document {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  fileName       String
+  title          String?
+  author         String?
+  genre          String?
+  textType       String?
+  isPublic       Boolean  @default(false)
+  languageCode   String
+  originalText   String   @db.Text
+  translatedText String?  @db.Text
+  audioPath      String
+  audioFileName  String
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([isPublic, createdAt])
+}

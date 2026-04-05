@@ -1,65 +1,105 @@
-import fetch from 'node-fetch';
+import { fetchWithTimeout, retryAsync } from './httpClient.js';
 
 const MYMEMORY_URL = 'https://api.mymemory.translated.net/get';
-const CHUNK_SIZE = 400; // La API MyMemory acepta hasta 500 caracteres por petición, usamos 400 parte tener más margen
+const CHUNK_SIZE = 400;
+const TRANSLATION_TIMEOUT_MS = parseInt(process.env.TRANSLATION_TIMEOUT_MS || '10000', 10);
+const TRANSLATION_RETRIES = parseInt(process.env.TRANSLATION_RETRIES || '2', 10);
 
 /**
  * Divide el texto en trozos más pequeños respetando frases completas
  * para que la traducción sea más coherente
  */
+const pushIfNotEmpty = (chunks, value) => {
+  if (value.trim()) {
+    chunks.push(value.trim());
+  }
+};
+
+const splitLongSentenceByWords = (sentence, maxLength) => {
+  const chunks = [];
+  const words = sentence.split(' ');
+  let current = '';
+
+  for (const word of words) {
+    const nextChunk = current ? `${current} ${word}` : word;
+
+    if (nextChunk.length > maxLength) {
+      pushIfNotEmpty(chunks, current);
+      current = word;
+      continue;
+    }
+
+    current = nextChunk;
+  }
+
+  pushIfNotEmpty(chunks, current);
+  return chunks;
+};
+
 const splitIntoSentenceChunks = (text, maxLength = CHUNK_SIZE) => {
-  // Dividir por oraciones (punto, interrogación, exclamación seguidos de espacio o fin)
   const sentences = text.match(/[^.!?]+[.!?]+[\s]*/g) || [text];
   const chunks = [];
   let current = '';
 
   for (const sentence of sentences) {
-    if ((current + sentence).length > maxLength) {
-      if (current.trim()) chunks.push(current.trim());
-      // Si la oración individual es demasiado larga, dividir por palabras
-      if (sentence.length > maxLength) {
-        const words = sentence.split(' ');
-        let wordChunk = '';
-        for (const word of words) {
-          if ((wordChunk + ' ' + word).trim().length > maxLength) {
-            if (wordChunk.trim()) chunks.push(wordChunk.trim());
-            wordChunk = word;
-          } else {
-            wordChunk = wordChunk ? wordChunk + ' ' + word : word;
-          }
-        }
-        if (wordChunk.trim()) chunks.push(wordChunk.trim());
-        current = '';
-      } else {
-        current = sentence;
-      }
-    } else {
-      current += sentence;
+    const nextChunk = current + sentence;
+
+    if (nextChunk.length <= maxLength) {
+      current = nextChunk;
+      continue;
     }
+
+    pushIfNotEmpty(chunks, current);
+
+    if (sentence.length > maxLength) {
+      chunks.push(...splitLongSentenceByWords(sentence, maxLength));
+      current = '';
+      continue;
+    }
+
+    current = sentence;
   }
-  if (current.trim()) chunks.push(current.trim());
+
+  pushIfNotEmpty(chunks, current);
   return chunks;
+};
+
+const fetchTranslationResponse = async (text) => {
+  const params = new URLSearchParams({
+    q: text,
+    langpair: 'en|es',
+  });
+
+  const response = await fetchWithTimeout(
+    `${MYMEMORY_URL}?${params.toString()}`,
+    {},
+    TRANSLATION_TIMEOUT_MS
+  );
+
+  if (!response.ok) {
+    const error = new Error(`Error en MyMemory API: ${response.statusText}`);
+    error.retryable = response.status >= 500;
+    throw error;
+  }
+
+  return response;
 };
 
 /**
  * Traduce un fragmento de texto de inglés a español usando MyMemory API
  */
 const translateChunk = async (text) => {
-  const params = new URLSearchParams({
-    q: text,
-    langpair: 'en|es',
-  });
+  const response = await retryAsync(
+    () => fetchTranslationResponse(text),
+    { retries: TRANSLATION_RETRIES }
+  );
 
-  const res = await fetch(`${MYMEMORY_URL}?${params.toString()}`);
-
-  if (!res.ok) {
-    throw new Error(`Error en MyMemory API: ${res.statusText}`);
-  }
-
-  const data = await res.json();
+  const data = await response.json();
 
   if (data.responseStatus !== 200) {
-    throw new Error(`MyMemory devolvió error: ${data.responseDetails || data.responseStatus}`);
+    throw new Error(
+      `MyMemory devolvio error: ${data.responseDetails || data.responseStatus}`
+    );
   }
 
   return data.responseData.translatedText;

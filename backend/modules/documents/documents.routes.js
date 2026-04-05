@@ -7,10 +7,13 @@ import {
   listUserDocumentsController,
   updateDocumentController,
   uploadDocumentController,
+  uploadGuestDocumentController,
 } from './documents.controller.js';
 import { uploadDocumentMiddleware } from './documents.upload.middleware.js';
 
 const router = express.Router();
+
+router.post('/guest-upload', uploadDocumentMiddleware, uploadGuestDocumentController);
 
 router.use(requireAuth);
 

@@ -14,6 +14,9 @@ const registerTestUser = async () => {
       password: '123456',
     });
 
+  expect(response.statusCode).toBe(201);
+  expect(response.body.user.role).toBe('user');
+
   return response.body.token;
 };
 

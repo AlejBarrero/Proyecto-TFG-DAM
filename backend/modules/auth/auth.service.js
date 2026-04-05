@@ -25,6 +25,7 @@ const createAccessToken = (user) => {
     {
       sub: String(user.id),
       email: user.email,
+      role: user.role,
     },
     JWT_SECRET,
     { expiresIn: DEFAULT_JWT_EXPIRES_IN }
@@ -37,6 +38,7 @@ const buildAuthResponse = (user) => ({
     id: user.id,
     userName: user.userName,
     email: user.email,
+    role: user.role,
     createdAt: user.createdAt,
   },
 });
@@ -73,6 +75,7 @@ export const registerUser = async (payload) => {
       userName: normalizedUserName,
       email: normalizedEmail,
       passwordHash,
+      role: 'user',
     },
   });
 
@@ -108,11 +111,12 @@ export const getCurrentUserProfile = async (userId) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
-        id: true,
-        userName: true,
-        email: true,
-        createdAt: true,
-        },
+      id: true,
+      userName: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
   });
 
   if (!user) {

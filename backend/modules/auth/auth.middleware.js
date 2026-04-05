@@ -32,6 +32,7 @@ export const requireAuth = (req, _res, next) => {
     req.user = {
       id: Number(payload.sub),
       email: payload.email,
+      role: payload.role,
     };
 
     return next();
@@ -40,4 +41,20 @@ export const requireAuth = (req, _res, next) => {
     error.statusCode = 401;
     return next(error);
   }
+};
+
+export const requireAdmin = (req, _res, next) => {
+  if (!req.user) {
+    const error = new Error('No autorizado. Debes iniciar sesion.');
+    error.statusCode = 401;
+    return next(error);
+  }
+
+  if (req.user.role !== 'admin') {
+    const error = new Error('Acceso denegado. Se requiere rol admin.');
+    error.statusCode = 403;
+    return next(error);
+  }
+
+  return next();
 };

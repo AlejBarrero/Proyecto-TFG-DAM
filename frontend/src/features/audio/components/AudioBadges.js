@@ -1,11 +1,14 @@
 export default function AudioBadges({ detectedLanguage, translated }) {
   return (
-    <div className="result__badges">
-      <span className="badge badge--lang">
-        Idioma detectado:
-        {detectedLanguage}
+    <div className="flex flex-wrap gap-3">
+      <span className="inline-flex items-center rounded-full bg-brand-soft px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-dark">
+        Idioma: {detectedLanguage}
       </span>
-      {translated && <span className="badge badge--translated">Traducido de ingles a español</span>}
+      {translated && (
+        <span className="inline-flex items-center rounded-full bg-brand-accent px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+          Traducido a español
+        </span>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import path from 'path';
 import fs from 'fs-extra';
 import { z } from 'zod';
 import { prisma } from '../../lib/prisma.js';
@@ -7,7 +8,12 @@ import { translateToSpanish } from '../../services/translationService.js';
 import { textToSpeech } from '../../services/ttsService.js';
 import { extractTextFromPdf } from './pdfExtractor.js';
 import { assertValidPdfFile } from './documents.validator.js';
-import { buildAudioFileName, buildAudioPath } from './documents.constants.js';
+import {
+  buildAudioFileName,
+  buildGuestAudioPath,
+  buildGuestAudioUrl,
+  buildPrivateAudioPath,
+} from './documents.constants.js';
 import { removeFileIfExists } from './documents.repository.js';
 
 
@@ -91,11 +97,12 @@ const translateIfNeeded = async (originalText, languageCode, filePath) => {
   }
 };
 
-const generateAudioFromText = async (textForAudio, filePath) => {
+const generateAudioFromText = async (textForAudio, filePath, buildAudioDestinationPath) => {
   const audioFileName = buildAudioFileName();
-  const audioPath = buildAudioPath(audioFileName);
+  const audioPath = buildAudioDestinationPath(audioFileName);
 
   try {
+    await fs.ensureDir(path.dirname(audioPath));
     await textToSpeech(textForAudio, 'es', audioPath);
 
     return {
@@ -109,6 +116,46 @@ const generateAudioFromText = async (textForAudio, filePath) => {
     ttsError.statusCode = 502;
     ttsError.causeMessage = error.message;
     throw ttsError;
+  }
+};
+
+const processDocumentCore = async (file, metadata = {}, buildAudioDestinationPath) => {
+  const normalizedMetadata = normalizeDocumentMetadata(metadata);
+
+  validateUploadedFile(file);
+  await validateStoredPdfFile(file.path);
+
+  try {
+    const rawText = await extractDocumentText(file.path);
+    const originalText = await normalizeAndValidateText(rawText, file.path);
+    const langResult = await detectDocumentLanguage(originalText, file.path);
+    const translatedText = await translateIfNeeded(originalText, langResult.code, file.path);
+    const textForAudio = translatedText ?? originalText;
+
+    const { audioFileName, audioPath } = await generateAudioFromText(
+      textForAudio,
+      file.path,
+      buildAudioDestinationPath
+    );
+
+    await removeFileIfExists(file.path);
+
+    return {
+      normalizedMetadata,
+      fileName: file.originalname,
+      languageCode: langResult.code,
+      originalText,
+      translatedText,
+      audioFileName,
+      audioPath,
+      translated: Boolean(translatedText),
+    };
+  } catch (error) {
+    if (file?.path) {
+      await removeFileIfExists(file.path).catch(() => {});
+    }
+
+    throw error;
   }
 };
 
@@ -165,6 +212,14 @@ const updateDocumentSchema = z.object({
     .min(1, 'El titulo no puede estar vacio.')
     .max(255, 'El titulo no puede superar los 255 caracteres.')
     .optional(),
+  author: z.string().trim().max(255, 'El autor no puede superar los 255 caracteres.').optional(),
+  genre: z.string().trim().max(255, 'El genero no puede superar los 255 caracteres.').optional(),
+  textType: z
+    .string()
+    .trim()
+    .max(255, 'El tipo de texto no puede superar los 255 caracteres.')
+    .optional(),
+  isPublic: z.boolean().optional(),
 });
 
 const parseDocumentId = (documentId) => {
@@ -199,41 +254,31 @@ const ensureDocumentOwnership = async (userId, documentId) => {
 };
 
 export const processUploadedDocument = async (file, userId, metadata = {}) => {
-  const normalizedMetadata = normalizeDocumentMetadata(metadata);
+  const processed = await processDocumentCore(file, metadata, buildPrivateAudioPath);
 
-  validateUploadedFile(file);
-  await validateStoredPdfFile(file.path);
+  return createDocumentRecord({
+    userId,
+    file: { originalname: processed.fileName },
+    metadata: processed.normalizedMetadata,
+    languageCode: processed.languageCode,
+    originalText: processed.originalText,
+    translatedText: processed.translatedText,
+    audioPath: processed.audioPath,
+    audioFileName: processed.audioFileName,
+  });
+};
 
-  try {
-    const rawText = await extractDocumentText(file.path);
-    const originalText = await normalizeAndValidateText(rawText, file.path);
-    const langResult = await detectDocumentLanguage(originalText, file.path);
-    const translatedText = await translateIfNeeded(originalText, langResult.code, file.path);
-    const textForAudio = translatedText ?? originalText;
+export const processGuestUploadedDocument = async (file, metadata = {}) => {
+  const processed = await processDocumentCore(file, metadata, buildGuestAudioPath);
 
-    const { audioFileName, audioPath } = await generateAudioFromText(textForAudio, file.path);
-
-    const document = await createDocumentRecord({
-      userId,
-      file,
-      metadata: normalizedMetadata,
-      languageCode: langResult.code,
-      originalText,
-      translatedText,
-      audioPath,
-      audioFileName,
-    });
-
-    await removeFileIfExists(file.path);
-
-    return document;
-  } catch (error) {
-    if (file?.path) {
-      await removeFileIfExists(file.path).catch(() => {});
-    }
-
-    throw error;
-  }
+  return {
+    fileName: processed.fileName,
+    title: processed.normalizedMetadata.title || processed.fileName,
+    languageCode: processed.languageCode,
+    translated: processed.translated,
+    translatedText: processed.translatedText,
+    audioUrl: buildGuestAudioUrl(processed.audioFileName),
+  };
 };
 
 export const listUserDocuments = async (userId) => {
@@ -302,17 +347,27 @@ export const updateDocument = async (userId, documentId, payload) => {
     throw error;
   }
 
-  if (typeof result.data.title === 'undefined') {
-    const error = new Error('Debes enviar al menos el campo title.');
+  if (Object.keys(result.data).length === 0) {
+    const error = new Error(
+      'Debes enviar al menos uno de estos campos: title, author, genre, textType o isPublic.'
+    );
     error.statusCode = 400;
     throw error;
   }
 
+  const normalizedData = {
+    ...(typeof result.data.title !== 'undefined' ? { title: result.data.title || null } : {}),
+    ...(typeof result.data.author !== 'undefined' ? { author: result.data.author || null } : {}),
+    ...(typeof result.data.genre !== 'undefined' ? { genre: result.data.genre || null } : {}),
+    ...(typeof result.data.textType !== 'undefined'
+      ? { textType: result.data.textType || null }
+      : {}),
+    ...(typeof result.data.isPublic !== 'undefined' ? { isPublic: result.data.isPublic } : {}),
+  };
+
   return prisma.document.update({
     where: { id: existingDocument.id },
-    data: {
-      title: result.data.title,
-    },
+    data: normalizedData,
     select: {
       id: true,
       fileName: true,

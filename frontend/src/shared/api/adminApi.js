@@ -19,3 +19,8 @@ export async function deleteAdminUser(userId) {
   const response = await httpClient.delete(`/api/admin/users/${userId}`);
   return response.data;
 }
+
+export async function deleteAdminDocument(documentId) {
+  const response = await httpClient.delete(`/api/admin/documents/${documentId}`);
+  return response.data;
+}

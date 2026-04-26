@@ -4,8 +4,8 @@ import TopNavbar from '../shared/components/TopNavbar';
 import { Save, SquarePen, Trash2 } from 'lucide-react';
 
 function AdminPage({ user, onSignOut }) {
-  const { users, documents, loading, error, reload, updateUserRole, deleteUser, deleteAdminUser } =
-    useAdminDashboard();
+  const { users, documents, loading, error, reload, updateUserRole, deleteUser, deleteDocument } =
+  useAdminDashboard();
 
   const [editingUserId, setEditingUserId] = useState(null);
   const [editingRole, setEditingRole] = useState('');
@@ -36,16 +36,16 @@ function AdminPage({ user, onSignOut }) {
   };
 
   const handleDeleteDocument = async (documentId) => {
-    const confirmed = window.confirm('¿Seguro que quieres eliminar este documento?');
+  const confirmed = window.confirm('¿Seguro que quieres eliminar este documento?');
 
-    if (!confirmed) {
-      return;
-    }
+  if (!confirmed) {
+    return;
+  }
 
-    try {
-      await deleteAdminUser(documentId);
-    } catch {}
-  };
+  try {
+    await deleteDocument(documentId);
+  } catch {}
+};
 
   return (
     <div className="min-h-screen bg-slate-100 text-brand-dark">

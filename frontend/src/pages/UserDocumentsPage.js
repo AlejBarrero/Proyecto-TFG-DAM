@@ -1,4 +1,3 @@
-import HomeHero from '../features/home/components/HomeHero';
 import FileUploader from '../features/upload/components/FileUploader';
 import UserDocumentEditor from '../features/user/components/UserDocumentEditor';
 import UserDocumentsList from '../features/user/components/UserDocumentsList';

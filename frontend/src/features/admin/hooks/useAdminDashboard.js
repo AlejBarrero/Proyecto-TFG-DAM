@@ -3,7 +3,8 @@ import {
   getAdminDocuments,
   getAdminUsers,
   updateAdminUserRole,
-  deleteAdminUser
+  deleteAdminUser,
+  deleteAdminDocument,
 } from '../../../shared/api/adminApi';
 
 export function useAdminDashboard() {
@@ -60,6 +61,20 @@ export function useAdminDashboard() {
   }
 };
 
+const deleteDocument = async (documentId) => {
+  setError(null);
+
+  try {
+    await deleteAdminDocument(documentId);
+
+    setDocuments((current) => current.filter((item) => item.id !== documentId));
+  } catch (err) {
+    setError(err.response?.data?.message || 'No se pudo eliminar el documento.');
+    throw err;
+  }
+};
+
+
 
   useEffect(() => {
     loadDashboard();
@@ -73,5 +88,6 @@ export function useAdminDashboard() {
     reload: loadDashboard,
     updateUserRole,
     deleteUser,
+    deleteDocument,
   };
 }

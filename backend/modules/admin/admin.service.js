@@ -1,5 +1,4 @@
 import { prisma } from '../../lib/prisma.js';
-import { deleteAdminDocumentController } from './admin.controller.js';
 
 export const listAllUsers = async () => {
   return prisma.user.findMany({

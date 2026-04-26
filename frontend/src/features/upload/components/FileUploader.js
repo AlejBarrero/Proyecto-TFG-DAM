@@ -44,7 +44,7 @@ export default function FileUploader({ isAuthenticated = false, onUploadSuccess 
   return (
     <section className="w-full">
       {!response && (
-        <div className="mx-auto w-full max-w-3xl rounded-[24px] border border-white/60 bg-white/95 p-5 shadow-panel backdrop-blur sm:rounded-[28px] sm:p-8 lg:p-10">
+        <div className="content-width content-card bg-white/95">
           <p className="mb-5 text-sm leading-6 text-slate-500 sm:mb-6">
             {isAuthenticated
               ? 'Modo usuario: el documento se procesa y se guarda en tu cuenta.'
@@ -73,7 +73,7 @@ export default function FileUploader({ isAuthenticated = false, onUploadSuccess 
       )}
 
       {error && (
-        <div className="mx-auto mt-4 w-full max-w-3xl">
+        <div className="content-width mt-4">
           <UploadError message={error} />
         </div>
       )}

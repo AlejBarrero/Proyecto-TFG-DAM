@@ -1,18 +1,55 @@
+import { useState } from 'react';
 import { useAdminDashboard } from '../features/admin/hooks/useAdminDashboard';
-import MarketingHero from '../shared/components/MarketingHero';
 import TopNavbar from '../shared/components/TopNavbar';
+import { Save, SquarePen, Trash2 } from 'lucide-react';
 
 function AdminPage({ user, onSignOut }) {
-  const { users, documents, loading, error, reload } = useAdminDashboard();
+  const { users, documents, loading, error, reload, updateUserRole, deleteUser, deleteAdminUser } =
+    useAdminDashboard();
+
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [editingRole, setEditingRole] = useState('');
+
+  const handleEditUser = (userId, currentRole) => {
+    setEditingUserId(userId);
+    setEditingRole(currentRole);
+  };
+
+  const handleSaveUserRole = async (userId) => {
+    try {
+      await updateUserRole(userId, editingRole);
+      setEditingUserId(null);
+      setEditingRole('');
+    } catch {}
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const confirmed = window.confirm('¿Seguro que quieres eliminar este usuario?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteUser(userId);
+    } catch {}
+  };
+
+  const handleDeleteDocument = async (documentId) => {
+    const confirmed = window.confirm('¿Seguro que quieres eliminar este documento?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteAdminUser(documentId);
+    } catch {}
+  };
 
   return (
     <div className="min-h-screen bg-slate-100 text-brand-dark">
       <TopNavbar isAuthenticated onSignOut={onSignOut} />
-      <MarketingHero
-        eyebrow="Administracion"
-        title="Convierte documentos PDF en audio con una experiencia dual."
-        description="Los invitados pueden convertir temporalmente. Los usuarios autenticados guardan sus documentos, y los administradores acceden a una vista de control global."
-      />
 
       <main className="page-shell section-stack py-8" role="main">
         <section className="panel-card">
@@ -72,7 +109,7 @@ function AdminPage({ user, onSignOut }) {
           </div>
         )}
 
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
+        <section className="grid grid-cols-1 gap-6">
           <article className="overflow-hidden rounded-[28px] bg-white shadow-panel">
             <div className="border-b border-slate-100 px-6 py-5">
               <h2 className="text-xl font-bold text-brand-dark">Usuarios</h2>
@@ -81,43 +118,110 @@ function AdminPage({ user, onSignOut }) {
               </p>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-brand-dark">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold sm:px-6 sm:py-4">ID</th>
-                    <th className="px-4 py-3 font-semibold sm:px-6 sm:py-4">Usuario</th>
-                    <th className="px-4 py-3 font-semibold sm:px-6 sm:py-4">Rol</th>
-                    <th className="px-4 py-3 font-semibold sm:px-6 sm:py-4">Docs</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((item) => (
-                    <tr key={item.id} className="border-t border-slate-100">
-                      <td className="px-4 py-3 text-slate-500 sm:px-6 sm:py-4">{item.id}</td>
-                      <td className="px-4 py-4 sm:px-6">
-                        <div className="font-semibold text-brand-dark">{item.userName}</div>
-                        <div className="text-xs text-slate-500">{item.email}</div>
-                      </td>
-                      <td className="px-4 py-4 sm:px-6">
-                        <span className="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand-dark">
-                          {item.role}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-slate-600 sm:px-6">
-                        {item._count?.documents ?? 0}
-                      </td>
-                    </tr>
-                  ))}
-                  {!loading && users.length === 0 && (
-                    <tr>
-                      <td className="px-6 py-6 text-slate-500" colSpan="4">
-                        No hay usuarios para mostrar.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="flex flex-col">
+              <div className="hidden grid-cols-[88px_minmax(0,2fr)_132px_96px_104px] gap-4 border-b border-slate-100 bg-slate-50 px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 lg:grid">
+                <span>ID</span>
+                <span>Usuario</span>
+                <span>Rol</span>
+                <span>Docs</span>
+                <span className="text-right">Acciones</span>
+              </div>
+
+              {users.map((item) => (
+                <div
+                  key={item.id}
+                  className="border-t border-slate-100 px-6 py-5 first:border-t-0 lg:py-4"
+                >
+                  <div className="grid gap-4 lg:grid-cols-[88px_minmax(0,2fr)_132px_96px_104px] lg:items-center">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        ID
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">{item.id}</p>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Usuario
+                      </p>
+                      <p className="mt-1 font-semibold text-brand-dark">{item.userName}</p>
+                      <p className="break-all text-xs text-slate-500">{item.email}</p>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Rol
+                      </p>
+                      <div className="mt-1">
+                        {editingUserId === item.id ? (
+                          <select
+                            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-brand-dark"
+                            value={editingRole}
+                            onChange={(event) => setEditingRole(event.target.value)}
+                          >
+                            <option value="user">user</option>
+                            <option value="admin">admin</option>
+                          </select>
+                        ) : (
+                          <span className="inline-flex rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand-dark">
+                            {item.role}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Docs
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">{item._count?.documents ?? 0}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2 lg:justify-end">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Acciones
+                      </p>
+                      {editingUserId === item.id ? (
+                        <button
+                          className="inline-flex items-center justify-center rounded-full bg-brand-dark p-2 text-white transition hover:bg-brand-mid"
+                          onClick={() => handleSaveUserRole(item.id)}
+                          type="button"
+                          aria-label={`Guardar rol de ${item.userName}`}
+                          title="Guardar"
+                        >
+                          <Save className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <button
+                          className="inline-flex items-center justify-center rounded-full bg-brand-accent p-2 text-white transition hover:bg-brand-dark"
+                          onClick={() => handleEditUser(item.id, item.role)}
+                          type="button"
+                          aria-label={`Editar rol de ${item.userName}`}
+                          title="Editar"
+                        >
+                          <SquarePen className="h-4 w-4" />
+                        </button>
+                      )}
+
+                      <button
+                        className="inline-flex items-center justify-center rounded-full bg-red-500 p-2 text-white transition hover:bg-red-600"
+                        onClick={() => handleDeleteUser(item.id)}
+                        type="button"
+                        aria-label={`Eliminar usuario ${item.userName}`}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {!loading && users.length === 0 && (
+                <div className="px-6 py-6 text-sm text-slate-500">
+                  No hay usuarios para mostrar.
+                </div>
+              )}
             </div>
           </article>
 
@@ -129,44 +233,80 @@ function AdminPage({ user, onSignOut }) {
               </p>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-slate-50 text-brand-dark">
-                  <tr>
-                    <th className="px-4 py-4 font-semibold sm:px-6">ID</th>
-                    <th className="px-4 py-4 font-semibold sm:px-6">Archivo</th>
-                    <th className="px-4 py-4 font-semibold sm:px-6">Idioma</th>
-                    <th className="px-4 py-4 font-semibold sm:px-6">Propietario</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {documents.map((item) => (
-                    <tr key={item.id} className="border-t border-slate-100 align-top">
-                      <td className="px-4 py-4 text-slate-500 sm:px-6">{item.id}</td>
-                      <td className="px-4 py-4 sm:px-6">
-                        <div className="font-semibold text-brand-dark">
-                          {item.title || item.fileName}
-                        </div>
-                        <div className="text-xs text-slate-500">{item.fileName}</div>
-                      </td>
-                      <td className="px-4 py-4 text-slate-600 sm:px-6">{item.languageCode}</td>
-                      <td className="px-4 py-4 sm:px-6">
-                        <div className="font-semibold text-brand-dark">
-                          {item.user?.userName || '-'}
-                        </div>
-                        <div className="text-xs text-slate-500">{item.user?.email || '-'}</div>
-                      </td>
-                    </tr>
-                  ))}
-                  {!loading && documents.length === 0 && (
-                    <tr>
-                      <td className="px-6 py-6 text-slate-500" colSpan="4">
-                        No hay documentos para mostrar.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="flex flex-col">
+              <div className="hidden grid-cols-[88px_minmax(0,2fr)_112px_minmax(0,1.7fr)_64px] gap-4 border-b border-slate-100 bg-slate-50 px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 lg:grid">
+                <span>ID</span>
+                <span>Archivo</span>
+                <span>Idioma</span>
+                <span>Propietario</span>
+                <span className="text-right">Accion</span>
+              </div>
+
+              {documents.map((item) => (
+                <div
+                  key={item.id}
+                  className="border-t border-slate-100 px-6 py-5 first:border-t-0 lg:py-4"
+                >
+                  <div className="grid gap-4 lg:grid-cols-[88px_minmax(0,2fr)_112px_minmax(0,1.7fr)_64px] lg:items-center">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        ID
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">{item.id}</p>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Archivo
+                      </p>
+                      <p className="mt-1 break-words font-semibold text-brand-dark">
+                        {item.title || item.fileName}
+                      </p>
+                      <p className="break-all text-xs text-slate-500">{item.fileName}</p>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Idioma
+                      </p>
+                      <p className="mt-1 text-sm text-slate-600">{item.languageCode}</p>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Propietario
+                      </p>
+                      <p className="mt-1 font-semibold text-brand-dark">
+                        {item.user?.userName || '-'}
+                      </p>
+                      <p className="break-all text-xs text-slate-500">
+                        {item.user?.email || '-'}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 lg:justify-end">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 lg:hidden">
+                        Accion
+                      </p>
+                      <button
+                        className="inline-flex items-center justify-center rounded-full bg-red-500 p-2 text-white transition hover:bg-red-600"
+                        onClick={() => handleDeleteDocument(item.id)}
+                        type="button"
+                        aria-label={`Eliminar documento ${item.fileName}`}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {!loading && documents.length === 0 && (
+                <div className="px-6 py-6 text-sm text-slate-500">
+                  No hay documentos para mostrar.
+                </div>
+              )}
             </div>
           </article>
         </section>

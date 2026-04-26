@@ -13,7 +13,7 @@ export default function AuthPanel({
   error,
 }) {
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white/70 p-4 shadow-panel backdrop-blur sm:rounded-[30px] sm:p-5">
+    <section className="content-width">
       <div className="flex flex-wrap gap-3">
         <button
           className={`${tabBaseClassName} ${

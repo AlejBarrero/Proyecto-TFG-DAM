@@ -1,8 +1,8 @@
+import HomeHero from '../features/home/components/HomeHero';
 import FileUploader from '../features/upload/components/FileUploader';
 import UserDocumentEditor from '../features/user/components/UserDocumentEditor';
 import UserDocumentsList from '../features/user/components/UserDocumentsList';
 import { useUserDocumentsDashboard } from '../features/user/hooks/useUserDocumentsDashboard';
-import MarketingHero from '../shared/components/MarketingHero';
 import TopNavbar from '../shared/components/TopNavbar';
 
 function UserDocumentsPage({ user, onSignOut }) {
@@ -25,11 +25,15 @@ function UserDocumentsPage({ user, onSignOut }) {
   return (
     <div className="min-h-screen bg-slate-100 text-brand-dark">
       <TopNavbar isAuthenticated onSignOut={onSignOut} />
-      <MarketingHero
-        eyebrow="Usuario"
-        title="Convierte documentos PDF en audio con una experiencia dual."
-        description="Los invitados pueden convertir temporalmente. Los usuarios autenticados guardan sus documentos, y los administradores acceden a una vista de control global."
-      />
+      <section className="user-documents-hero">
+      <p className="user-documents-hero__eyebrow">Mis documentos</p>
+      <h1 className="user-documents-hero__title">
+        Gestiona tus documentos y conversiones.
+      </h1>
+      <p className="user-documents-hero__description">
+        Sube archivos PDF, consulta su estado y accede al historial de audios generados desde un único espacio.
+      </p>
+    </section>
 
       <main className="page-shell section-stack py-8">
         <section className="panel-card">

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import logo from '../../assets/logo-black.png';
+
 
 const navButtonClassName =
   'inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-4 focus:ring-brand-mid/20';
@@ -34,24 +36,21 @@ export default function TopNavbar({
           onClick={handleLogoClick}
           type="button"
         >
-          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-dark text-sm font-black text-white sm:h-11 sm:w-11">
-            P2V
-          </span>
-          <span className="block">
-            <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-mid sm:text-xs">
-              PDF2Voice
-            </span>
-            <span className="block text-sm font-bold text-brand-dark sm:text-base">Inicio</span>
-          </span>
+          <img
+            src={logo}
+            alt="PDF2Voice"
+            className="h-10 w-auto shrink-0 sm:h-11"
+          />
+          <span className="block text-sm font-bold text-brand-dark sm:text-base">Inicio</span>
+
         </button>
 
         <div className="hidden items-center gap-3 md:flex">
           <button
-            className={`${navButtonClassName} ${
-              isAuthenticated
+            className={`${navButtonClassName} ${isAuthenticated
                 ? 'border border-slate-200 bg-white text-brand-dark hover:bg-slate-50'
                 : 'bg-brand-dark text-white hover:bg-brand-mid'
-            }`}
+              }`}
             onClick={handlePrimaryAction}
             type="button"
           >
@@ -78,11 +77,10 @@ export default function TopNavbar({
         <div className="border-t border-slate-200 bg-white md:hidden">
           <div className="page-shell flex flex-col gap-3 py-4">
             <button
-              className={`${navButtonClassName} ${
-                isAuthenticated
+              className={`${navButtonClassName} ${isAuthenticated
                   ? 'border border-slate-200 bg-white text-brand-dark hover:bg-slate-50'
                   : 'bg-brand-dark text-white hover:bg-brand-mid'
-              } w-full`}
+                } w-full`}
               onClick={handlePrimaryAction}
               type="button"
             >

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import FileUploader from '../features/upload/components/FileUploader';
 import { useAuthSession } from '../features/auth/hooks/useAuthSession';
 import AuthPanel from '../features/home/components/AuthPanel';
-import MarketingHero from '../shared/components/MarketingHero';
 import TopNavbar from '../shared/components/TopNavbar';
+import HomeHero from '../features/home/components/HomeHero';
 import AdminPage from './AdminPage';
 import UserDocumentsPage from './UserDocumentsPage';
 
@@ -37,6 +37,7 @@ function HomePage() {
     }
   };
 
+  
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100 px-6">
@@ -46,7 +47,7 @@ function HomePage() {
       </div>
     );
   }
-
+  
   if (isAuthenticated && user?.role === 'admin') {
     return <AdminPage user={user} onSignOut={signOut} />;
   }
@@ -54,27 +55,34 @@ function HomePage() {
   if (isAuthenticated && user?.role === 'user') {
     return <UserDocumentsPage user={user} onSignOut={signOut} />;
   }
-
+  
   return (
-    <div className="min-h-screen bg-slate-100 text-brand-dark">
-      <TopNavbar
-        isAuthenticated={false}
-        onAuthAction={() => setShowAuthPanel((value) => !value)}
-        authActionLabel={showAuthPanel ? 'Ocultar acceso' : 'Acceder o registrarse'}
-      />
-      <MarketingHero />
+ <div className="min-h-screen bg-slate-100 pt-20 text-brand-dark">
+    <TopNavbar
+      isAuthenticated={false}
+      onAuthAction={() => setShowAuthPanel((value) => !value)}
+      authActionLabel={showAuthPanel ? 'Ocultar acceso' : 'Acceder o registrarse'}
+    />
 
-      <main className="page-shell section-stack py-8" role="main">
-        {!isAuthenticated && showAuthPanel && (
-          <AuthPanel
-            authView={authView}
-            onChangeAuthView={setAuthView}
-            onLogin={handleLogin}
-            onRegister={handleRegister}
-            submittingAuth={submittingAuth}
-            error={error}
-          />
-        )}
+    <HomeHero
+      user={user}
+      isAuthenticated={isAuthenticated}
+      showAuthPanel={showAuthPanel}
+      onToggleAuthPanel={() => setShowAuthPanel((value) => !value)}
+      onSignOut={signOut}
+    />
+
+    <main className="page-shell section-stack py-8" role="main">
+      {!isAuthenticated && showAuthPanel && (
+        <AuthPanel
+          authView={authView}
+          onChangeAuthView={setAuthView}
+          onLogin={handleLogin}
+          onRegister={handleRegister}
+          submittingAuth={submittingAuth}
+          error={error}
+        />
+      )}
 
         <section className="section-stack">
           <div className="flex flex-col gap-2">

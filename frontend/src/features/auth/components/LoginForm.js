@@ -27,15 +27,11 @@ export default function LoginForm({ onSubmit, loading, error }) {
   };
 
   return (
-    <section className="mx-auto w-full max-w-2xl rounded-[24px] border border-white/60 bg-white/90 p-5 shadow-panel backdrop-blur sm:rounded-[28px] sm:p-8 lg:p-10">
+    <section className="content-card">
       <div className="mb-6 space-y-2 sm:mb-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-brand-mid">
-          Acceso
-        </p>
         <h2 className="text-3xl font-bold tracking-tight text-brand-dark">Iniciar sesión</h2>
         <p className="text-sm leading-6 text-slate-500">
-          Accede a tu cuenta para guardar documentos, revisarlos más tarde y usar el panel que te
-          corresponda según tu rol.
+          Accede a tu cuenta para guardar documentos, revisarlos más tarde.
         </p>
       </div>
 

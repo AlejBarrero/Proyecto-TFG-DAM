@@ -53,11 +53,7 @@ export const textToSpeech = async (text, languageCode, outputPath) => {
   for (const chunk of chunks) {
     if (!chunk.trim()) continue;
 
-    const url = googleTTS.getAudioUrl(chunk, {
-      lang: languageCode,
-      slow: false,
-      host: 'https://translate.google.com',
-    });
+    const url = await googleTTS(chunk, languageCode, 1);
 
     const response = await retryAsync(
       () => fetchTtsChunk(url),

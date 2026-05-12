@@ -1,4 +1,4 @@
-const AUTH_STORAGE_KEY = 'pdf2voice.auth';
+const AUTH_STORAGE_KEY = 'pdfvoice_db.auth';
 
 export function readStoredSession() {
   const raw = localStorage.getItem(AUTH_STORAGE_KEY);

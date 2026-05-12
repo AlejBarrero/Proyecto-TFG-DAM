@@ -29,9 +29,6 @@ function UserDocumentsPage({ user, onSignOut }) {
       <h1 className="user-documents-hero__title">
         Gestiona tus documentos y conversiones.
       </h1>
-      <p className="user-documents-hero__description">
-        Sube archivos PDF, consulta su estado y accede al historial de audios generados desde un único espacio.
-      </p>
     </section>
 
       <main className="page-shell section-stack py-8">

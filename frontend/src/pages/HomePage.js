@@ -90,12 +90,8 @@ function HomePage() {
               Conversión
             </p>
             <h2 className="text-2xl font-black tracking-tight text-brand-dark sm:text-3xl">
-              Prueba la conversion sin cuenta
+              Proba la conversion sin cuenta.
             </h2>
-            <p className="max-w-3xl text-sm leading-6 text-slate-500 sm:text-base">
-              En modo invitado el archivo se convierte de forma temporal y no se persiste en la base
-              de datos.
-            </p>
           </div>
 
           <div className="mx-auto w-full">

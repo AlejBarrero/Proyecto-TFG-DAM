@@ -1,0 +1,8 @@
+{
+  "homeHero": {
+    "title": "PDF2Voice",
+    "description": "Convert PDF documents into audio with a dual experience.",
+    "guestInfo": "As a guest, you can convert files temporarily. By creating an account, you can save your documents.",
+    "cta": "You can sign in with your account or continue as a guest for a temporary conversion."
+  }
+}
